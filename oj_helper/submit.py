@@ -1,3 +1,4 @@
+import logging
 import random
 import re
 import time
@@ -5,6 +6,8 @@ import time
 from oj_helper import config, session, username
 
 __all__ = ['submit', 'SubmitInfo']
+
+logger = logging.getLogger(__name__)
 
 def submit(problem_id, filename):
     """Submit source code file to lambda OJ, return submit info.
@@ -52,6 +55,7 @@ def _get_csrf_token():
 def _send_qaptcha_key(key):
     payload = dict(action='qaptcha', qaptcha_key=key)
     session.post(config['qaptcha_key_url'], data=payload)
+    logger.info('qaptcha key posted')
 
 def _send_form(problem_id, language, filename, csrf_token, qaptcha_key):
     payload = {'csrf_token': csrf_token,
@@ -60,6 +64,7 @@ def _send_form(problem_id, language, filename, csrf_token, qaptcha_key):
                qaptcha_key: ''}
     files = {'upload_file': open(filename)}
     r = session.post(config['submit_url'], data=payload, files=files)
+    logger.info('Form submitted')
 
     # Find the latest submit of the user
     m = re.search(r'\b' + username + r'\b', r.text)
@@ -68,6 +73,7 @@ def _send_form(problem_id, language, filename, csrf_token, qaptcha_key):
     # but this can't happen all the time anyway, sorry for the inconvenience.
     m = re.search(r'<span class="id">\s*(\d+)', r.text[m.end():])
     submit_num = int(m.group(1)) + 1
+    logger.info('Submit number got: %d', submit_num)
 
     return SubmitInfo(submit_num)
 
@@ -85,6 +91,7 @@ class SubmitInfo(object):
             time.sleep(1)
             r = session.get(url)  # re-get
 
+        logger.info('Submit result got')
         # Set points
         m = re.search(r'<span class="status-\w+">(\d+)</span>', r.text)
         self.points = int(m.group(1))
@@ -110,6 +117,8 @@ class SubmitInfo(object):
                           int(m.group(3)),
                           int(m.group(4)))
             self.samples.append(sample)
+
+        logger.info('Samples info read')
 
     def __str__(self):
         s = ('                       Total points: %d\n'
