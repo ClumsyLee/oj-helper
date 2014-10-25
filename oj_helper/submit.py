@@ -55,7 +55,7 @@ def _get_csrf_token():
 def _send_qaptcha_key(key):
     payload = dict(action='qaptcha', qaptcha_key=key)
     session.post(config['qaptcha_key_url'], data=payload)
-    logger.info('qaptcha key posted')
+    logger.debug('qaptcha key posted')
 
 def _send_form(problem_id, language, filename, csrf_token, qaptcha_key):
     payload = {'csrf_token': csrf_token,
@@ -73,7 +73,7 @@ def _send_form(problem_id, language, filename, csrf_token, qaptcha_key):
     # but this can't happen all the time anyway, sorry for the inconvenience.
     m = re.search(r'<span class="id">\s*(\d+)', r.text[m.end():])
     submit_num = int(m.group(1)) + 1
-    logger.info('Submit number got: %d', submit_num)
+    logger.debug('Submit number got: %d', submit_num)
 
     return SubmitInfo(submit_num)
 
@@ -91,7 +91,7 @@ class SubmitInfo(object):
             time.sleep(config['retry_interval'])
             r = session.get(url)  # re-get
 
-        logger.info('Submit result got')
+        logger.debug('Result page got')
         # Set points
         m = re.search(r'<span class="status-\w+">(\d+)</span>', r.text)
         self.points = int(m.group(1))
@@ -99,6 +99,8 @@ class SubmitInfo(object):
         # Set samples
         self.samples = []
         self.__set_samples(r.text)
+
+        logger.info('Submit info received')
 
     def __set_samples(self, text):
         matches = re.finditer(
@@ -118,7 +120,7 @@ class SubmitInfo(object):
                           int(m.group(4)))
             self.samples.append(sample)
 
-        logger.info('Samples info read')
+        logger.debug('Samples info read')
 
     def __str__(self):
         s = ('                       Total points: %d\n'

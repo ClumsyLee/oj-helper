@@ -15,10 +15,12 @@ logger.info('Configuration loaded')
 # Create session
 session = requests.Session()
 _r = session.get(config['profile_url'], cookies=config['cookies'])
-logger.info('Profile page got')
+logger.debug('Profile page got')
 
 _m = re.search(r'<h2>(\w+)\b', _r.text)
 username = _m.group(1)
-logger.info('User name read: %s', username)
+logger.debug('User name read: %s', username)
+
+logger.info('Prepare works done')
 
 from .submit import submit, SubmitInfo
