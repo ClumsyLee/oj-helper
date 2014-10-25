@@ -5,7 +5,8 @@ import requests
 
 __all__ = ['config', 'session', 'submit', 'SubmitInfo', 'username']
 
-logging.basicConfig(format='%(asctime)s %(levelname)s:%(name)s:%(message)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(name)s:%(message)s',
+                    level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
 # Import config
