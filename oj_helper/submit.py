@@ -1,5 +1,6 @@
 import random
 import re
+import time
 
 from oj_helper import config, session, username
 
@@ -77,6 +78,32 @@ class SubmitInfo(object):
         super(SubmitInfo, self).__init__()
         self.submit_num = submit_num
 
+        url = config['submit_info_url'] % submit_num
+        r = session.get(url)
+        # Loop while we should wait
+        while '<span class="sub-status-waiting">' in r.text:
+            time.sleep(1)
+            r = session.get(url)  # re-get
+
+        # Set points
+        m = re.search(r'<span class="status-\w+">(\d+)</span>', r.text)
+        self.points = int(m.group(1))
+
+        # Set samples
+        self.samples = []
+        self.__set_samples(r.text)
+
+    def __set_samples(self, text):
+        matches = re.finditer(r'<td class="id">(\d+)</td>.*?'
+                              r'<span class="sub-status-\w+">(.*?)</span>.*?'
+                              r'(\d+)</span> ms</td>.*?'
+                              r'(\d+)</span> KiB</td>', text, flags=re.DOTALL)
+        for m in matches:
+            sample = (int(m.group(1)),
+                      m.group(2),
+                      int(m.group(3)),
+                      int(m.group(4)))
+            self.samples.append(sample)
 
 
 if __name__ == '__main__':
