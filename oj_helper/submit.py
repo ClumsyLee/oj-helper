@@ -96,8 +96,9 @@ class SubmitInfo(object):
     def __set_samples(self, text):
         matches = re.finditer(
             r'<td class="id">(\d+)</td>.*?'
-            r'<span class="sub-status-\w+">(.*?)</span>'
-            r'(?:.*?(\d+)</span> ms</td>.*?(\d+)</span> KiB</td>)?',
+            r'<span class="sub-status-\w+">(.*?)</span>.*?'
+            r'<td class="time">(?:\s*<span .*?>(\d+)</span>)?.*?'
+            r'<td class="memory">(?:\s*<span .*?>(\d+)</span>)?',
             text, flags=re.DOTALL)
 
         for m in matches:
