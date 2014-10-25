@@ -7,6 +7,9 @@ Make it more easy to use LambdaOJ: http://lambda.cool/oj
 **Submiting on LambdaOJ is really a painful experience.**
 
 ## Usage
+First, set cookie `remember_token` in `config.json`
+(can be found in your browser)
+
 under folder oj-helper, type
 
     $ python -m oj_helper.submit <problem_id> <code_file> [stay]
