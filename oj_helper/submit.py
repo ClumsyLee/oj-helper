@@ -4,7 +4,7 @@ import time
 
 from oj_helper import config, session, username
 
-__all__ = ['submit']
+__all__ = ['submit', 'SubmitInfo']
 
 def submit(problem_id, filename):
     """Submit source code file to lambda OJ, return submit info.
@@ -94,15 +94,20 @@ class SubmitInfo(object):
         self.__set_samples(r.text)
 
     def __set_samples(self, text):
-        matches = re.finditer(r'<td class="id">(\d+)</td>.*?'
-                              r'<span class="sub-status-\w+">(.*?)</span>.*?'
-                              r'(\d+)</span> ms</td>.*?'
-                              r'(\d+)</span> KiB</td>', text, flags=re.DOTALL)
+        matches = re.finditer(
+            r'<td class="id">(\d+)</td>.*?'
+            r'<span class="sub-status-\w+">(.*?)</span>'
+            r'(?:.*?(\d+)</span> ms</td>.*?(\d+)</span> KiB</td>)?',
+            text, flags=re.DOTALL)
+
         for m in matches:
-            sample = (int(m.group(1)),
-                      m.group(2),
-                      int(m.group(3)),
-                      int(m.group(4)))
+            if m.group(3) is None:  # No time & memory info
+                sample = (int(m.group(1)), m.group(2), None, None)
+            else:
+                sample = (int(m.group(1)),
+                          m.group(2),
+                          int(m.group(3)),
+                          int(m.group(4)))
             self.samples.append(sample)
 
 
