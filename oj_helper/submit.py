@@ -110,6 +110,24 @@ class SubmitInfo(object):
                           int(m.group(4)))
             self.samples.append(sample)
 
+    def __str__(self):
+        s = ('                       Total points: %d\n'
+             'Sample           Status             Time      Memory\n'
+             % self.points)
+
+        for sample in self.samples:
+            if sample[2] is not None:
+                time_str = str(sample[2]) + ' ms'
+                memory_str = str(sample[3]) + ' KiB'
+            else:
+                time_str = '    -   '
+                memory_str = '     -    '
+
+            s += '%4d   %s %8s %12s\n' % (sample[0],
+                                          sample[1].center(26),
+                                          time_str,
+                                          memory_str)
+        return s
 
 if __name__ == '__main__':
     from sys import argv
@@ -117,4 +135,4 @@ if __name__ == '__main__':
     if len(argv) != 3:
         print('Usage: %s <problem_id> <filename>' % argv[0])
     else:
-        submit(int(argv[1]), argv[2])
+        print(submit(int(argv[1]), argv[2]))
