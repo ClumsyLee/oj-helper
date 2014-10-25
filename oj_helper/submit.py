@@ -1,13 +1,13 @@
 import random
 import re
 
-from oj_helper import config, session
+from oj_helper import config, session, username
 
 __all__ = ['submit']
 
 def submit(problem_id, filename):
-    """Submit source code file to lambda OJ
-    currently only C & C++ are supported
+    """Submit source code file to lambda OJ, return submit info.
+    Currently only C & C++ are supported
     """
     language = _judge_language(filename)
 
@@ -18,8 +18,9 @@ def submit(problem_id, filename):
     # Send qaptcha key to server (simulate dragging)
     _send_qaptcha_key(qaptcha_key)
     # Submit
-    _send_form(problem_id, language, filename, csrf_token, qaptcha_key)
+    info = _send_form(problem_id, language, filename, csrf_token, qaptcha_key)
 
+    return info
 
 def _judge_language(filename):
     dot_pos = filename.rfind('.')
@@ -57,7 +58,25 @@ def _send_form(problem_id, language, filename, csrf_token, qaptcha_key):
                'language': language,
                qaptcha_key: ''}
     files = {'upload_file': open(filename)}
-    session.post(config['submit_url'], data=payload, files=files)
+    r = session.post(config['submit_url'], data=payload, files=files)
+
+    # Find the latest submit of the user
+    m = re.search(r'\b' + username + r'\b', r.text)
+    # Find submit number of the next submit
+    # Notice that this may fail when the previous submit is the last submit,
+    # but this can't happen all the time anyway, sorry for the inconvenience.
+    m = re.search(r'<span class="id">\s*(\d+)', r.text[m.end():])
+    submit_num = int(m.group(1)) + 1
+
+    return SubmitInfo(submit_num)
+
+
+class SubmitInfo(object):
+    """Result for a submit"""
+    def __init__(self, submit_num):
+        super(SubmitInfo, self).__init__()
+        self.submit_num = submit_num
+
 
 
 if __name__ == '__main__':
