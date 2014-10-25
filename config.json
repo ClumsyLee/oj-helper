@@ -1,4 +1,5 @@
 {
+    "retry_interval": 0.0,
     "index_url": "http://lambda.cool/oj/index",
     "submit_url": "http://lambda.cool/oj/submit",
     "submit_info_url": "http://lambda.cool/oj/submit_info/%d",

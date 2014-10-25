@@ -88,7 +88,7 @@ class SubmitInfo(object):
         r = session.get(url)
         # Loop while we should wait
         while '<span class="sub-status-waiting">' in r.text:
-            time.sleep(1)
+            time.sleep(config['retry_interval'])
             r = session.get(url)  # re-get
 
         logger.info('Submit result got')
