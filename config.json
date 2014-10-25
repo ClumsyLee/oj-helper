@@ -6,6 +6,6 @@
     "qaptcha_key_url": "http://lambda.cool/oj/qaptcha/key",
     "cookies":
     {
-        "remember_token": ""  // Find this in your browser
+        "remember_token": ""
     }
 }
