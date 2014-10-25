@@ -1,14 +1,16 @@
 import json
+import re
 import requests
 
-__all__ = ['config', 'session', 'submit']
+__all__ = ['config', 'session', 'submit', 'username']
 
 # Import config
 config = json.load(open('config.json'))
 
 # Create session
 session = requests.Session()
-_r = session.get(config['index_url'], cookies=config['cookies'])
-_r.raise_for_status()
+_r = session.get(config['profile_url'], cookies=config['cookies'])
+_m = re.search(r'<h2>(\w+)\b', _r.text)
+username = _m.group(1)
 
 from .submit import submit

@@ -1,6 +1,7 @@
 {
     "index_url": "http://lambda.cool/oj/index/",
     "submit_url": "http://lambda.cool/oj/submit",
+    "profile_url": "http://lambda.cool/oj/profile",
     "qaptcha_key_url": "http://lambda.cool/oj/qaptcha/key",
     "cookies":
     {
