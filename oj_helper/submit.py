@@ -1,29 +1,24 @@
 import random
 import re
-import requests
 
-__all__ = ['submit', 'submit_url', 'qaptcha_key_url']
+from oj_helper import config, session
 
-submit_url = 'http://lambda.cool/oj/submit'
-qaptcha_key_url = 'http://lambda.cool/oj/qaptcha/key'
-cookies = {'remember_token': ''}  # Find it in your browser
+__all__ = ['submit']
 
 def submit(problem_id, filename):
     """Submit source code file to lambda OJ
-    currently language can be 'C' or 'C++'
-
+    currently only C & C++ are supported
     """
     language = _judge_language(filename)
 
-    s = requests.Session()
     # Get csrt token from server
-    csrf_token = _get_csrf_token(s)
+    csrf_token = _get_csrf_token()
     # Generate random qaptcha key
     qaptcha_key = _generate_key(32)
     # Send qaptcha key to server (simulate dragging)
-    _send_qaptcha_key(s, qaptcha_key)
+    _send_qaptcha_key(qaptcha_key)
     # Submit
-    _send_form(s, problem_id, language, filename, csrf_token, qaptcha_key)
+    _send_form(problem_id, language, filename, csrf_token, qaptcha_key)
 
 
 def _judge_language(filename):
@@ -47,22 +42,22 @@ def _generate_key(length):
         key += random.choice(chars)
     return key
 
-def _get_csrf_token(session):
-    r = session.get(submit_url, cookies=cookies)
+def _get_csrf_token():
+    r = session.get(config['submit_url'])
     m = re.search(r'csrf.*value="(.*)"', r.text)
     return m.group(1)
 
-def _send_qaptcha_key(session, key):
+def _send_qaptcha_key(key):
     payload = dict(action='qaptcha', qaptcha_key=key)
-    session.post(qaptcha_key_url, data=payload)
+    session.post(config['qaptcha_key_url'], data=payload)
 
-def _send_form(session, problem_id, language, filename, csrf_token, qaptcha_key):
+def _send_form(problem_id, language, filename, csrf_token, qaptcha_key):
     payload = {'csrf_token': csrf_token,
                'problem_id': problem_id,
                'language': language,
                qaptcha_key: ''}
     files = {'upload_file': open(filename)}
-    session.post(submit_url, data=payload, files=files)
+    session.post(config['submit_url'], data=payload, files=files)
 
 
 if __name__ == '__main__':
