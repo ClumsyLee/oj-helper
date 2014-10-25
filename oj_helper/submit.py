@@ -144,7 +144,11 @@ class SubmitInfo(object):
 if __name__ == '__main__':
     from sys import argv
 
-    if len(argv) != 3:
-        print('Usage: %s <problem_id> <filename>' % argv[0])
-    else:
-        print(submit(int(argv[1]), argv[2]))
+    if len(argv) < 3:
+        print('Usage: %s <problem_id> <filename> [stay]' % argv[0])
+
+    print(submit(int(argv[1]), argv[2]))
+
+    if len(argv) == 4 and argv[3] == 'stay':
+        while input("Enter to submit again (q to quit): ") != 'q':
+            print(submit(int(argv[1]), argv[2]))

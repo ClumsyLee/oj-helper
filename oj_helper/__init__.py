@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 # Import config
 config = json.load(open('config.json'))
-logger.info('Configuration loaded')
+logger.debug('Configuration loaded')
 
 # Create session
 session = requests.Session()
