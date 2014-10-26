@@ -1,7 +1,7 @@
 oj-helper
 =========
 
-Make it more easy to use LambdaOJ: http://lambda.cool/oj
+Make it easier to use LambdaOJ: http://lambda.cool/oj
 
 ## Motivation
 **Submiting on LambdaOJ is really a painful experience.**
