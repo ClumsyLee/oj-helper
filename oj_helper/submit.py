@@ -30,7 +30,7 @@ def _judge_language(filename):
     dot_pos = filename.rfind('.')
     if dot_pos < 0:  # Not found
         raise ValueError('Failed to judge language from filename: "%s" does '
-                         'not have a suffix')
+                         'not have a suffix' % filename)
     suffix = filename[dot_pos + 1:]
 
     if suffix == 'c':  # C
